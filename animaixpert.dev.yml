@@ -1,0 +1,38 @@
+# Use root/example as user/password credentials
+version: '3.1'
+
+services:
+  user_ms:
+    image: animaixpert/user_ms
+    container_name: user_ms
+    command: python3 -m gunicorn -w 4 -b 0.0.0.0:${USER_MS_PORT} app:app
+    restart: always
+    environment:
+      MONGO_USERNAME: ${USER_DB_USERNAME}
+      MONGO_PASSWORD: ${USER_DB_PASSWORD}
+      MONGO_HOST: user_db
+      MONGO_PORT: 27017
+      MONGO_DATABASE: ${USER_DB_DATABASE}
+    ports:
+      - '4000:4000'
+    depends_on:
+      - user_db
+
+  user_db:
+    image: mongo
+    restart: always
+    container_name: user_db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${USER_DB_ADMIN_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${USER_DB_ADMIN_PASSWORD}
+      - MONGO_INITDB_DATABASE=${USER_DB_DATABASE}
+      - MONGO_USERNAME=${USER_DB_USERNAME}
+      - MONGO_PASSWORD=${USER_DB_PASSWORD}
+    volumes:
+      - userdb:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+    ports:
+      - "27018:27017"
+
+volumes:
+  userdb:
