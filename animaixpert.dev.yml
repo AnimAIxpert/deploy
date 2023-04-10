@@ -34,5 +34,29 @@ services:
     ports:
       - "27018:27017"
 
+  web_app:
+    image: animaixpert/animaixpert_wa
+    restart: always
+    container_name: web_app
+    ports:
+      - "8080:3000"
+    environment:
+     - REACT_APP_PROTOCOL=${API_PROTOCOL}
+     - REACT_APP_BACKEND_HOST=${API_HOST}
+     - REACT_APP_BACKEND_PORT=${API_PORT}
+  
+  api:
+    image: animaixpert/animaixpert_api
+    restart: always
+    container_name: api
+    ports:
+      - "8001:8000"
+    environment:
+     - FRONT_END_PROTOCOL=${FRONTEND_PROTOCOL}
+     - FRONT_END_HOST=${FRONTEND_HOST}
+     - FRONT_END_PORT=${FRONTEND_PORT}
+     - USER_MS_HOST=${USER_MS_HOST}
+     - USER_MS_PORT=${USER_MS_PORT}
+
 volumes:
   userdb:
